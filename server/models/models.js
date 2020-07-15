@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uniqueValidation = require('mongoose-unique-validator');
 
 var {Schema} = mongoose;
 
@@ -12,25 +13,39 @@ const userEntrySchema = new Schema({
     Name : {
         type:String,
         required: true,
+        validate: {
+            validator: (v)=> {
+              return /^[A-Za-z][A-Za-z\'\-]+([\ A-Za-z][A-Za-z\'\-]+)*/.test(v);
+            },
+            message: props => `${props.value} is not a valid Name `
+        },
     },
     username : {
         type :String,
-        min:4,
-        max:25,
+        minlength:4,
+        maxlength:25,
         unique:true,
-        required: "username can't be empty"
+        validate: {
+            validator: (v)=> {
+              return /(^[a-zA-Z0-9_]+$)/.test(v);
+            },
+            message: props => `${props.value} is not a valid username `
+        },
+        required: [true,"username can't be empty"]
     },
     email:{
         type :String,
         unique:true,
-        required: "username can't be empty",
+        required: [true,"Email can't be empty"],
     },
     password:{
         type:String,
-        min:6,
+        minlength:[8, "password length must be 8 characters long"],
         required: true
     }
 });
+
+userEntrySchema.plugin(uniqueValidation,{ message: `{VALUE} already taken. please try another one` });
 
 const userEntry = mongoose.model('userEntry',userEntrySchema);
 
