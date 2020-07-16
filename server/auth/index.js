@@ -13,8 +13,11 @@ router.get('/', (req, res) => {
 
 router.post('/signup',async(req,res,next)=>{
     try{
+        let hashedPassword = await bcryptjs.hash(req.body.password,12);
+        req.body.password = hashedPassword;
         const userentries = new userEntry(req.body);
         const createEntry = await userentries.save();
+        delete createEntry.password;
         res.json(createEntry);
     }catch(error){
         next(error);
