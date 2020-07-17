@@ -13,6 +13,7 @@ router.get('/', (req, res) => {
 
 router.post('/signup',async(req,res,next)=>{
     try{
+        req.body.password=req.body.password.split(" ").join("");
         let hashedPassword = await bcryptjs.hash(req.body.password,12);
         req.body.password = hashedPassword;
         const userentries = new userEntry(req.body);
