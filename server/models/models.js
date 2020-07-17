@@ -10,7 +10,7 @@ var {Schema} = mongoose;
 //email
 
 const userEntrySchema = new Schema({
-    Name : {
+    name : {
         type:String,
         required: true,
         validate: {
