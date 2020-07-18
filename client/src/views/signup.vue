@@ -2,7 +2,7 @@
   <section class="pt-5">
     <h2 class="pl-3">Create Accout</h2>
 		<form @submit.prevent = "signup">
-			<div v-if="errorMessage" class="alert alert-warning" role="alert">
+			<div v-if="errorMessage" class="form-group alert alert-warning col-sm-6" role="alert">
 				{{errorMessage}}
 			</div>
 			<div class="form-group col-md-6">
@@ -71,6 +71,16 @@
   </section>
 </template>
 <script>
+/* eslint-disable */
+import Joi from '@hapi/joi';
+
+const schema = Joi.object().keys({
+	name: Joi.string().regex(/^[A-Za-z][A-Za-z\'\-]+([\ A-Za-z][A-Za-z\'\-]+)*/),
+	username: Joi.string().regex(/(^[a-zA-Z0-9_]+$)/).min(2).max(30),
+	email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+	password: Joi.string().trim().min(6).required(),
+	confirmPassword: Joi.string().trim().min(6).required(),
+});
 export default {
 	data: () => ({
 		errorMessage: '',
@@ -92,10 +102,15 @@ export default {
 		},
 		validUser() {
 			if (this.user.password !== this.user.confirmPassword) {
-				this.errorMessage = 'Password Must Match. ';
+				this.errorMessage = 'Password Must Match. 	🐁';
 				return false;
 			}
-			return '';
+			const result = Joi.validate(this.user, schema);
+			if (result.error === null) {
+				return true;
+			}
+			console.log(result.error.message);
+			return false;
 		},
 	},
 };
