@@ -74,6 +74,8 @@
 /* eslint-disable */
 import Joi from '@hapi/joi';
 
+const API_URL = 'http://localhost:5000/auth/signup';
+
 const schema = Joi.object().keys({
 	name: Joi.string().regex(/^[A-Za-z][A-Za-z\'\-]+([\ A-Za-z][A-Za-z\'\-]+)*/),
 	username: Joi.string().regex(/(^[a-zA-Z0-9_]+$)/).min(2).max(30),
@@ -92,24 +94,60 @@ export default {
 			confirmPassword: '',
 		},
 	}),
+	watch: {
+    user: {
+      handler() {
+        this.errorMessage = '';
+      },
+      deep: true,
+    },
+  },
 	methods: {
 		signup() {
 			this.errorMessage = '';
-			console.log(this.user);
 			if (this.validUser()) {
-				console.log(this.user);
-			}
+				const body = {
+					name: this.user.name,
+					username: this.user.username,
+					email: this.user.email,
+          password: this.user.password,
+        };
+				fetch(API_URL,{
+					method: 'POST',
+					body : JSON.stringify(body),
+					headers: {
+						'content-type': 'application/json', 
+					},
+				}).then((res)=>{
+					if(res.ok){
+						return res.json();
+					}
+					return res.json().then((err)=>{
+						throw new Error(err.message);
+					});
+				}).then((user)=>{
+
+				}).catch((err)=>{
+					
+				})
+			} 
 		},
 		validUser() {
 			if (this.user.password !== this.user.confirmPassword) {
-				this.errorMessage = 'Password Must Match. 	🐁';
+				this.errorMessage = 'Password Must Match. 🐁';
 				return false;
 			}
 			const result = Joi.validate(this.user, schema);
 			if (result.error === null) {
 				return true;
 			}
-			console.log(result.error.message);
+			if (result.error.message.includes('username')) {
+				this.errorMessage = 'username invalid ! 😭 '	
+			} else if(result.error.message.includes('name')) {
+        this.errorMessage = 'Name is invalid. 🐘';
+      } else {
+        this.errorMessage = 'Password is invalid. 🙈';
+      }
 			return false;
 		},
 	},
