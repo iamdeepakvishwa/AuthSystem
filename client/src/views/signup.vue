@@ -76,7 +76,7 @@ import Joi from '@hapi/joi';
 
 const API_URL = 'http://localhost:5000/auth/signup';
 
-const schema = Joi.object().keys({
+const schema = Joi.object({
 	name: Joi.string().regex(/^[A-Za-z][A-Za-z\'\-]+([\ A-Za-z][A-Za-z\'\-]+)*/),
 	username: Joi.string().regex(/(^[a-zA-Z0-9_]+$)/).min(2).max(30),
 	email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
@@ -118,17 +118,17 @@ export default {
 					headers: {
 						'content-type': 'application/json', 
 					},
-				}).then((res)=>{
-					if(res.ok){
-						return res.json();
+				}).then((response)=>{
+					if(response.ok){
+						return response.json();
 					}
-					return res.json().then((err)=>{
-						throw new Error(err.message);
+					return response.json().then((error)=>{
+						throw new Error(error);
 					});
 				}).then((user)=>{
-
-				}).catch((err)=>{
-					
+						console.log(user);
+				}).catch((error)=>{
+					console.log(error);
 				})
 			} 
 		},
@@ -137,14 +137,16 @@ export default {
 				this.errorMessage = 'Password Must Match. 🐁';
 				return false;
 			}
-			const result = Joi.validate(this.user, schema);
-			if (result.error === null) {
+			const result = schema.validate(this.user);
+			if (!result.error) {
 				return true;
 			}
 			if (result.error.message.includes('username')) {
 				this.errorMessage = 'username invalid ! 😭 '	
 			} else if(result.error.message.includes('name')) {
-        this.errorMessage = 'Name is invalid. 🐘';
+				this.errorMessage = 'Name is invalid. 🐘';
+			} else if(result.error.message.includes('email')) {
+        this.errorMessage = 'Email is invalid. 📧 ';
       } else {
         this.errorMessage = 'Password is invalid. 🙈';
       }

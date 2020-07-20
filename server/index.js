@@ -2,30 +2,23 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-const mongoose = require('mongoose');
 require('dotenv').config();
 const app = express();
 
 const route = require('./auth/index');
 
 
-mongoose.connect(process.env.MONGODB_URI,{
-    useNewUrlParser:true,
-    useUnifiedTopology:true,
-});
-
-
 
 app.use(morgan('common'));
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: 'http://localhost:8080',
 }));
 app.use(helmet());
 app.use(express.json());
 
 app.use('/auth',route);
 
-const  notFound=(req, res, next)=> {
+const notFound =(req,res,next)=> {
   res.status(404);
   const error = new Error('Not Found - ' + req.originalUrl);
   next(error);
