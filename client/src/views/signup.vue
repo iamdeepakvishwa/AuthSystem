@@ -1,7 +1,11 @@
 <template>
+<!--eslint-disable-->
   <section class="pt-5">
     <h2 class="pl-3">Create Accout</h2>
-		<form @submit.prevent = "signup">
+		<div class="ml-auto" v-if="signingUp">
+      	<img src="../assets/loader1.svg"/>
+    	</div>
+		<form v-if="!signingUp" @submit.prevent = "signup">
 			<div v-if="errorMessage" class="form-group alert alert-warning col-sm-6" role="alert">
 				{{errorMessage}}
 			</div>
@@ -85,6 +89,7 @@ const schema = Joi.object({
 });
 export default {
 	data: () => ({
+		signingUp: false,
 		errorMessage: '',
 		user: {
 			name: '',
@@ -111,7 +116,8 @@ export default {
 					username: this.user.username,
 					email: this.user.email,
           password: this.user.password,
-        };
+				};
+				this.signingUp = true;
 				fetch(API_URL,{
 					method: 'POST',
 					body : JSON.stringify(body),
@@ -123,13 +129,19 @@ export default {
 						return response.json();
 					}
 					return response.json().then((error)=>{
-						throw new Error(error);
+						throw new Error(error.message);
 					});
 				}).then((user)=>{
-						console.log(user);
+						setTimeout(() => {
+            this.signingUp = false;
+            this.$router.push('/dashboard');
+          }, 1000);
 				}).catch((error)=>{
-					console.log(error);
-				})
+					setTimeout(() => {
+            this.signingUp = false;
+            this.errorMessage = error.message;
+          }, 1000);
+				});
 			} 
 		},
 		validUser() {
