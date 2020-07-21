@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const router = express.Router();
 
 const db = require('../models/models');
+const { response } = require('express');
 
 
 const users = db.get('users');
@@ -33,35 +34,34 @@ router.post('/signup',(req,res,next)=>{
       users.findOne({$or: [
         {email: req.body.email},
         {username: req.body.username}
-    ]}).then(user => {
-        // if user is undefined, username is not in the db, otherwise, duplicate user detected
-        if (user) {
-          // there is already a user in the db with this username...
-          // respond with an error!
-          const error = new Error('That username is taken. Please choose another one.');
-          res.status(409);
-          next(error);
-        }else if(email){
-            const error = new Error('That email is taken. Please choose another one.');
+    ]},(err,user)=>{
+        if (user!== null && user.username=== req.body.username) {
+            // there is already a user in the db with this username...
+            // respond with an error!
+            const error = new Error('That username is taken. Please choose another one.');
             res.status(409);
             next(error);
-        } else {
-          // hash the password
-          bcrypt.hash(req.body.password.trim(), 12).then(hashedPassword => {
-            // insert the user with the hashed password
-            const newUser = {
-                name: req.body.name,
-                username: req.body.username,
-                email: req.body.email,
-                password: hashedPassword
-            };
-  
-            users.insert(newUser).then(insertedUser => {
-              res.json(insertedUser);
+          }else if(user!== null && user.email === req.body.email){
+              const error = new Error('That email is taken. Please choose another one.');
+              res.status(409);
+              next(error);
+          } else {
+            // hash the password
+            bcrypt.hash(req.body.password.trim(), 12).then(hashedPassword => {
+              // insert the user with the hashed password
+              const newUser = {
+                  name: req.body.name,
+                  username: req.body.username,
+                  email: req.body.email,
+                  password: hashedPassword
+              };
+    
+              users.insert(newUser).then(insertedUser => {
+                res.json(insertedUser);
+              });
             });
-          });
         }
-      });
+    })
     } else {
       res.status(422);
       next(result.error);
