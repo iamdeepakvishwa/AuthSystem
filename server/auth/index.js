@@ -1,6 +1,7 @@
 const express = require('express');
 const Joi = require('@hapi/joi');
 const bcrypt = require('bcryptjs');
+const jsonwebtoken = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -19,6 +20,11 @@ const schema = Joi.object().keys({
 	email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
 	password: Joi.string().trim().min(6).required(),
 });
+
+const schemaLogin = Joi.object().keys({
+  username: Joi.string().regex(/(^[a-zA-Z0-9_]+$)/).min(2).max(30),
+  password: Joi.string().trim().min(6).required(),
+})
 
 
 
@@ -66,6 +72,52 @@ router.post('/signup',(req,res,next)=>{
       res.status(422);
       next(result.error);
     }
+});
+
+router.post('/login', (req,res,next)=>{
+    const result  = schemaLogin.validate(req.body);
+    if(!(result.error)){
+      users.findOne({
+        username: req.body.username
+      }).then(user=>{
+        if(user){
+          bcrypt.compare(req.body.password,user.password).then((result)=>{
+            if(result){
+              const payload = {
+                _id: user._id,
+                username: user.username,
+              }
+              jwt.sign(payload, process.env.TOKEN_SECRET,{
+                expiresIn: '1d'
+              },(err,token)=>{
+                if(err){
+                  const error = new Error('Unable to login');
+                  res.status(422);
+                  next(error);
+                }else{
+                  res.json({
+                    token
+                  });
+                }
+              });
+            }else{
+              const error = new Error('username or password is incorrect');
+              res.status(422);
+              next(error);
+            }
+          })
+        }else{
+          const error = new Error('username or password is incorrect');
+          res.status(422);
+          next(error);
+        }
+      })
+    }else{
+      const error = new Error('Unable to Login ');
+      res.status(422);
+      next(error);
+    }
 })
+
 
 module.exports = router;

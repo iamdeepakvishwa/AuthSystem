@@ -16,7 +16,7 @@ app.use(cors({
 app.use(helmet());
 app.use(express.json());
 
-app.use('/auth',route);
+app.use('/',route);
 
 const notFound =(req,res,next)=> {
   res.status(404);

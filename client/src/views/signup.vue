@@ -78,7 +78,7 @@
 /* eslint-disable */
 import Joi from '@hapi/joi';
 
-const API_URL = 'http://localhost:5000/auth/signup';
+const API_URL = 'http://localhost:5000/signup';
 
 const schema = Joi.object({
 	name: Joi.string().regex(/^[A-Za-z][A-Za-z\'\-]+([\ A-Za-z][A-Za-z\'\-]+)*/),
