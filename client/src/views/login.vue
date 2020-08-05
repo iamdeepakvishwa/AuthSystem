@@ -44,7 +44,7 @@
 <script>
 /* eslint-disable */
 import Joi from '@hapi/joi';
-const LOGIN_URL = 'http://localhost:5000/auth/login';
+const LOGIN_URL = 'http://localhost:5000/login';
 const schema = Joi.object().keys({
   username: Joi.string().regex(/(^[a-zA-Z0-9_]+$)/).min(2).max(30)
     .required(),
@@ -59,6 +59,14 @@ export default {
       password: '',
     },
   }),
+  watch: {
+    user: {
+      handler() {
+        this.errorMessage = '';
+      },
+      deep: true,
+    },
+  },
   methods: {
     login() {
       this.errorMessage = '';
@@ -96,14 +104,14 @@ export default {
       }
     },
     validUser() {
-      const result = Joi.validate(this.user, schema);
-      if (result.error === null) {
+      const result = schema.validate(this.user);
+      if (!result.error) {
         return true;
       }
       if (result.error.message.includes('username')) {
-        this.errorMessage = 'Username is invalid. 😭';
+        this.errorMessage = 'Username Or Password is invalid. 😭';
       } else {
-        this.errorMessage = 'Password is invalid. 🙈';
+        this.errorMessage = 'Username Or Password is invalid. 🙈';
       }
       return false;
     },

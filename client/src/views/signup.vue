@@ -158,10 +158,10 @@ export default {
 			} else if(result.error.message.includes('name')) {
 				this.errorMessage = 'Name is invalid. 🐘';
 			} else if(result.error.message.includes('email')) {
-        this.errorMessage = 'Email is invalid. 📧 ';
-      } else {
-        this.errorMessage = 'Password is invalid. 🙈';
-      }
+        		this.errorMessage = 'Email is invalid. 📧 ';
+			} else {
+				this.errorMessage = 'Password is invalid. 🙈';
+			}
 			return false;
 		},
 	},
