@@ -4,8 +4,25 @@ import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Signup from '../views/signup.vue';
 import Login from '../views/login.vue';
+import Dashboard from '../views/Dashboard.vue';
 
 Vue.use(VueRouter);
+
+function isLoggedinDashboard(to,from,next){
+	if(localStorage.token){
+		next('/dashboard');
+	} else{
+		next();
+	}
+}
+
+function isLoggedin(to,from,next){
+	if(localStorage.token){
+		next();
+	} else{
+		next('/login');
+	}
+}
 
 const routes = [
 	{
@@ -17,11 +34,19 @@ const routes = [
 		path: '/signup',
 		name: 'signup',
 		component: Signup,
+		beforeEnter: isLoggedinDashboard,
   },
   {
     path: '/login',
     name: 'login',
-    component: Login,
+	component: Login,
+	beforeEnter: isLoggedinDashboard,
+  },
+  {
+	path: '/Dashboard',
+	name: 'Dashboard',
+	component: Dashboard,
+	beforeEnter: isLoggedin
   }
 ];
 

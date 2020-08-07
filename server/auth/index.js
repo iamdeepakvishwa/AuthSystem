@@ -1,7 +1,7 @@
 const express = require('express');
 const Joi = require('@hapi/joi');
 const bcrypt = require('bcryptjs');
-const jsonwebtoken = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -26,6 +26,31 @@ const schemaLogin = Joi.object().keys({
   password: Joi.string().trim().min(6).required(),
 })
 
+
+function createTokenSendResponse(user, res, next) {
+  const payload = {
+    _id: user._id,
+    username: user.username
+  };
+
+  jwt.sign(payload, process.env.TOKEN_SECRET, {
+    expiresIn: '1d'
+  }, (err, token) => {
+    if (err) {
+      respondError422(res, next);
+    } else {
+      res.json({
+        token
+      });
+    }
+  });
+}
+
+function respondError422(res, next) {
+  res.status(422);
+  const error = new Error('Unable to login.');
+  next(error);
+}
 
 
 router.get('/', (req, res) => {
@@ -83,23 +108,7 @@ router.post('/login', (req,res,next)=>{
         if(user){
           bcrypt.compare(req.body.password,user.password).then((result)=>{
             if(result){
-              const payload = {
-                _id: user._id,
-                username: user.username,
-              }
-              jwt.sign(payload, process.env.TOKEN_SECRET,{
-                expiresIn: '1d'
-              },(err,token)=>{
-                if(err){
-                  const error = new Error('Unable to login');
-                  res.status(422);
-                  next(error);
-                }else{
-                  res.json({
-                    token
-                  });
-                }
-              });
+              createTokenSendResponse(user, res, next);
             }else{
               const error = new Error('username or password is incorrect');
               res.status(422);
