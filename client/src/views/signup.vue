@@ -78,7 +78,7 @@
 /* eslint-disable */
 import Joi from '@hapi/joi';
 
-const API_URL = 'http://localhost:5000/signup';
+const API_URL = 'http://localhost:5000/auth/signup';
 
 const schema = Joi.object({
 	name: Joi.string().regex(/^[A-Za-z][A-Za-z\'\-]+([\ A-Za-z][A-Za-z\'\-]+)*/),
@@ -131,16 +131,17 @@ export default {
 					return response.json().then((error)=>{
 						throw new Error(error.message);
 					});
-				}).then((user)=>{
-						setTimeout(() => {
-            this.signingUp = false;
-            this.$router.push('/dashboard');
-          }, 1000);
+				}).then((result)=>{
+					localStorage.token = result.token;
+					setTimeout(() => {
+						this.signingUp = false;
+						this.$router.push('/dashboard');
+					}, 1000);
 				}).catch((error)=>{
 					setTimeout(() => {
-            this.signingUp = false;
-            this.errorMessage = error.message;
-          }, 1000);
+						this.signingUp = false;
+						this.errorMessage = error.message;
+					}, 1000);
 				});
 			} 
 		},

@@ -53,11 +53,7 @@ function respondError422(res, next) {
 }
 
 
-router.get('/', (req, res) => {
-    res.json({
-      message: '🦄🌈✨Hello World!  🌈✨🦄'
-    });
-});
+
 
 router.post('/signup',(req,res,next)=>{
     const result = schema.validate(req.body);
@@ -86,9 +82,8 @@ router.post('/signup',(req,res,next)=>{
                   email: req.body.email,
                   password: hashedPassword
               };
-    
               users.insert(newUser).then(insertedUser => {
-                res.json(insertedUser);
+                createTokenSendResponse(insertedUser,res,next);
               });
             });
         }

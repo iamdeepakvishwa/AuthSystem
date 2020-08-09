@@ -44,7 +44,7 @@
 <script>
 /* eslint-disable */
 import Joi from '@hapi/joi';
-const LOGIN_URL = 'http://localhost:5000/login';
+const LOGIN_URL = 'http://localhost:5000/auth/login';
 const schema = Joi.object().keys({
   username: Joi.string().regex(/(^[a-zA-Z0-9_]+$)/).min(2).max(30)
     .required(),

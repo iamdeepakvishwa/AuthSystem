@@ -6,7 +6,7 @@ require('dotenv').config();
 const app = express();
 
 const route = require('./auth/index');
-
+const middlewares = require('./auth/middlewares');
 
 
 app.use(morgan('common'));
@@ -15,8 +15,18 @@ app.use(cors({
 }));
 app.use(helmet());
 app.use(express.json());
+app.use(middlewares.checkTokenSetUser);
 
-app.use('/',route);
+app.get('/', (req, res) => {
+  const body = req;
+  console.log("this body is :" +body.user);
+  res.json({
+    message: '🦄🌈✨Hello World! 🌈✨🦄',
+    user: req.user,
+  });
+});
+
+app.use('/auth',route);
 
 const notFound =(req,res,next)=> {
   res.status(404);
