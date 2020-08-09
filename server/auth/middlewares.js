@@ -13,7 +13,7 @@ function checkTokenSetUser (req,res,next){
                 }
                 //console.log(user);
                 req.user = user;
-                console.log(req.user);
+                console.log("this is request"+JSON.stringify(req.user));
                 next();
             })
         }else{

@@ -19,9 +19,9 @@ app.use(middlewares.checkTokenSetUser);
 
 app.get('/', (req, res) => {
   const body = req;
-  console.log("this body is :" +body.user);
+  console.log("this body is :" +JSON.stringify(body.user));
   res.json({
-    message: '🦄🌈✨Hello World! 🌈✨🦄',
+    message: 'API for GET works',
     user: req.user,
   });
 });
