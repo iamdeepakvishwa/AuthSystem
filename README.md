@@ -44,7 +44,7 @@ Add JWT-based authentication to a Node/Express/Mongo app.
 * [x] If a logged in user visits the signup or login page, redirect them to the dashboard
 * [x] If a non logged in user visits the dashboard, redirect to the login page
 * [x] After sign up, immediately login
-* [ ] Show username on dashboard
+* [x] Show username on dashboard
 * [ ] On homepage, show go to dashboard button instead of signup/login button
 * [ ] If logged in:
 	* [ ] Show logout button in header

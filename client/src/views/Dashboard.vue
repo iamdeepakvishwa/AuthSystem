@@ -3,6 +3,7 @@
     <section>
         <h1>Dashboard</h1>
         <h1>Hello ,{{user.username}}!! 👋</h1> 
+        <button @click="logout()" type="submit" class="btn btn-primary">Logout</button>
     </section>
 </template>
 
@@ -21,15 +22,20 @@ export default {
             }
         }).then(res=> res.json())
         .then((result)=>{
-            //console.log(result);
-            // if(result.user){
-            //     //console.log(result.user);
-            //     this.user = result.user;
-            // }else{
-            //     localStorage.removeItem('token');
-            //     this.$router.push('/login');
-            // }
+            console.log(result);
+            if(result.user){
+                //console.log(result.user);
+                this.user = result.user;
+            }else{
+                this.logout;
+            }
         })
+    },
+    methods: {
+        logout(){
+            localStorage.removeItem('token');
+            this.$router.push('/login');
+        }
     }
 };
 </script>
