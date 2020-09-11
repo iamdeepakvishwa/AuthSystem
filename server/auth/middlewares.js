@@ -10,7 +10,6 @@ const checkTokenSetUser = (req,res,next)=>{
                     console.log(error);
                 }
                 req.user = user;
-                console.log("this is request"+JSON.stringify(req.user));
                 next();
             })
         }else{
@@ -21,7 +20,18 @@ const checkTokenSetUser = (req,res,next)=>{
     }
 }
 
+const isLoggedin = (req,res,next)=>{
+    if(req.user){
+        next();
+    }else{
+        const error = new Error("Un-Authrized Access");
+        res.status(401);
+        next(error);
+    }
+}
+
 
 module.exports = {
     checkTokenSetUser,
+    isLoggedin,
 }

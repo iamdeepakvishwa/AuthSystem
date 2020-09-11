@@ -90,7 +90,6 @@ export default {
             throw new Error(error.message);
           });
         }).then((result) => {
-          console.log(result.token);
           localStorage.token = result.token;
           setTimeout(() => {
             this.loggingIn = false;

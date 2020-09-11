@@ -7,6 +7,7 @@ require('dotenv').config();
 const app = express();
 
 const middlewares = require('./auth/middlewares');
+const notes = require('./api/notes');
 const route = require('./auth/index');
 
 app.use(morgan('common'));
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(middlewares.checkTokenSetUser);
 
 
+
 app.get('/', (req, res) => {
   res.json({
     message: 'API for GET works',
@@ -26,6 +28,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth',route);
+app.use('/api/v1',middlewares.isLoggedin,notes);
+
 
 const notFound =(req,res,next)=> {
   res.status(404);
